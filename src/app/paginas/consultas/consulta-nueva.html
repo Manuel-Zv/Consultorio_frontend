@@ -1,0 +1,48 @@
+<div class="encabezado-pagina">
+  <h1>
+    <button type="button" class="btn-icon" routerLink="/panel/citas" title="Volver a citas">
+      <span class="material-icons">arrow_back</span>
+    </button>
+    Registrar consulta
+  </h1>
+</div>
+
+@if (cita(); as datosCita) {
+  <div class="tarjeta-contenido tarjeta-info">
+    <p><strong>Paciente:</strong> {{ datosCita.paciente?.nombres }} {{ datosCita.paciente?.apellidos }}</p>
+    <p><strong>Médico:</strong> {{ datosCita.medico?.nombres }} {{ datosCita.medico?.apellidos }}</p>
+    <p><strong>Fecha de la cita:</strong> {{ datosCita.fecha_hora_atencion | date: 'medium' }}</p>
+    <p><strong>Motivo de consulta:</strong> {{ datosCita.motivo_consulta }}</p>
+  </div>
+}
+
+<div class="tarjeta-contenido" style="padding: 20px 24px">
+  <form [formGroup]="formulario" (ngSubmit)="guardar()" class="campos">
+    <div class="campo" [class.invalido]="formulario.get('diagnostico')?.invalid && formulario.get('diagnostico')?.touched">
+      <label>Diagnóstico</label>
+      <textarea class="campo-control" formControlName="diagnostico" rows="3"></textarea>
+      @if (formulario.get('diagnostico')?.hasError('required')) {
+        <span class="campo-error">El diagnóstico es obligatorio</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label>Síntomas</label>
+      <textarea class="campo-control" formControlName="sintomas" rows="2"></textarea>
+    </div>
+
+    <div class="campo">
+      <label>Observaciones</label>
+      <textarea class="campo-control" formControlName="observaciones" rows="2"></textarea>
+    </div>
+
+    <div class="campo">
+      <label>Recomendaciones</label>
+      <textarea class="campo-control" formControlName="recomendaciones" rows="2"></textarea>
+    </div>
+
+    <button type="submit" class="btn-primary" [disabled]="guardando()" style="align-self: flex-start">
+      Registrar consulta
+    </button>
+  </form>
+</div>

@@ -1,0 +1,25 @@
+<div class="dialogo-cabecera">
+  <h2>Solicitar examen</h2>
+  <button type="button" class="btn-icon" (click)="cerrar()" aria-label="Cerrar">
+    <span class="material-icons">close</span>
+  </button>
+</div>
+
+<form [formGroup]="formulario" (ngSubmit)="guardar()">
+  <div class="dialogo-cuerpo campos">
+    <div class="campo" [class.invalido]="formulario.get('examen_id')?.invalid && formulario.get('examen_id')?.touched">
+      <label>Examen</label>
+      <select class="campo-control" formControlName="examen_id">
+        <option [ngValue]="null" disabled>Selecciona un examen</option>
+        @for (examen of examenes(); track examen.id) {
+          <option [ngValue]="examen.id">{{ examen.nombre }} ({{ examen.codigo }})</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="dialogo-acciones">
+    <button type="button" class="btn-outline" (click)="cerrar()">Cancelar</button>
+    <button type="submit" class="btn-primary">Guardar</button>
+  </div>
+</form>

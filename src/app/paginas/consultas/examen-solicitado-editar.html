@@ -1,0 +1,35 @@
+<div class="dialogo-cabecera">
+  <h2>Actualizar examen solicitado</h2>
+  <button type="button" class="btn-icon" (click)="cerrar()" aria-label="Cerrar">
+    <span class="material-icons">close</span>
+  </button>
+</div>
+
+<form [formGroup]="formulario" (ngSubmit)="guardar()">
+  <div class="dialogo-cuerpo campos">
+    <div class="campo">
+      <label>Estado</label>
+      <select class="campo-control" formControlName="estado">
+        <option value="solicitado">Solicitado</option>
+        <option value="realizado">Realizado</option>
+        <option value="entregado">Entregado</option>
+        <option value="cancelado">Cancelado</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label>Fecha de resultado</label>
+      <input class="campo-control" type="date" formControlName="fecha_resultado" />
+    </div>
+
+    <div class="campo">
+      <label>Resultado</label>
+      <textarea class="campo-control" formControlName="resultado" rows="3"></textarea>
+    </div>
+  </div>
+
+  <div class="dialogo-acciones">
+    <button type="button" class="btn-outline" (click)="cerrar()">Cancelar</button>
+    <button type="submit" class="btn-primary">Guardar</button>
+  </div>
+</form>

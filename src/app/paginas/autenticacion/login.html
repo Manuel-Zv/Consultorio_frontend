@@ -1,0 +1,89 @@
+<div class="fondo-login">
+  <div class="pantalla-login">
+
+    <!-- Columna izquierda: marca institucional -->
+    <section class="panel-marca">
+      <div class="panel-marca-header">
+        <h1 class="marca-titulo">Clínica Universitaria</h1>
+        <span class="marca-subtitulo">ESPAM MFL</span>
+      </div>
+
+      <img
+        src="/Doctors-pana.svg"
+        alt="Ilustración médica"
+        class="ilustracion-medica"
+      />
+
+      <p class="marca-tagline">
+        Gestión integral de citas, historias clínicas y atención médica.
+      </p>
+    </section>
+
+    <!-- Columna derecha: formulario de acceso -->
+    <section class="panel-formulario">
+      <div class="formulario-contenedor">
+        <div class="marca-movil">
+          <span>Clínica Universitaria ESPAM MFL</span>
+        </div>
+
+        <h2>Bienvenido de nuevo</h2>
+        <p class="subtitulo-formulario">Ingresa con tu cuenta de personal para continuar</p>
+
+        <form [formGroup]="formulario" (ngSubmit)="iniciarSesion()" class="formulario">
+
+          <!-- Campo Correo Electrónico -->
+          <div class="campo" [class.invalido]="formulario.get('email')?.invalid && formulario.get('email')?.touched">
+            <label>Correo electrónico</label>
+            <input
+              class="campo-control"
+              type="email"
+              formControlName="email"
+              autocomplete="username"
+              placeholder="nombre@correo.com"
+            />
+            @if (formulario.get('email')?.hasError('required') && formulario.get('email')?.touched) {
+              <span class="campo-error">El correo es obligatorio</span>
+            }
+            @if (formulario.get('email')?.hasError('email')) {
+              <span class="campo-error">Correo inválido</span>
+            }
+          </div>
+
+          <!-- Campo Contraseña -->
+          <div class="campo" [class.invalido]="formulario.get('password')?.invalid && formulario.get('password')?.touched">
+            <label>Contraseña</label>
+            <div class="input-wrapper">
+              <input
+                class="campo-control con-ojo"
+                [type]="ocultarPassword() ? 'password' : 'text'"
+                formControlName="password"
+                autocomplete="current-password"
+                placeholder="••••••••"
+              />
+
+            </div>
+            @if (formulario.get('password')?.hasError('required') && formulario.get('password')?.touched) {
+              <span class="campo-error">La contraseña es obligatoria</span>
+            }
+          </div>
+
+          @if (errorMensaje()) {
+            <div class="mensaje-error">
+              {{ errorMensaje() }}
+            </div>
+          }
+
+          <button type="submit" class="btn-primary boton-ingresar" [disabled]="cargando()">
+            @if (cargando()) {
+              <span class="spinner spinner-sm" style="border-color: rgba(255,255,255,0.4); border-top-color: #fff;"></span>
+            } @else {
+              Ingresar
+            }
+          </button>
+        </form>
+
+        <p class="pie-formulario">Sistema de gestión médica</p>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,188 @@
+@if (cargando()) {
+  <div class="cargando-contenedor">
+    <span class="spinner"></span>
+  </div>
+} @else if (consulta(); as datos) {
+  <div class="encabezado-pagina">
+    <div class="encabezado-textos">
+      <h1>
+        <button type="button" class="btn-icon" routerLink="/panel/citas" title="Volver a citas">
+          <span class="material-icons">arrow_back</span>
+        </button>
+        Consulta médica
+      </h1>
+      <p class="descripcion-pagina">Diagnóstico, recetas y exámenes asociados a la atención.</p>
+    </div>
+    <button type="button" class="btn-outline" (click)="imprimir()">
+      <span class="material-icons">print</span>
+      Imprimir
+    </button>
+  </div>
+
+  <div class="imprimible">
+    <div class="encabezado-impresion">
+      <h1>Clínica Universitaria ESPAM MFL</h1>
+      <span>Emitido el {{ hoy | date: 'medium' }}</span>
+    </div>
+
+    <!-- Resumen siempre visible: quien, con quien y cuando -->
+    <div class="tira-resumen">
+      <div class="dato-resumen">
+        <span class="material-icons">person</span>
+        <div>
+          <span class="etiqueta">Paciente</span>
+          <strong>{{ datos.cita?.paciente?.nombres }} {{ datos.cita?.paciente?.apellidos }}</strong>
+        </div>
+      </div>
+      <div class="dato-resumen">
+        <span class="material-icons">medical_services</span>
+        <div>
+          <span class="etiqueta">Médico</span>
+          <strong>{{ datos.cita?.medico?.nombres }} {{ datos.cita?.medico?.apellidos }}</strong>
+        </div>
+      </div>
+      <div class="dato-resumen">
+        <span class="material-icons">event</span>
+        <div>
+          <span class="etiqueta">Fecha de atención</span>
+          <strong>{{ datos.fecha_atencion | date: 'medium' }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="pestanas-consulta">
+      <div class="pestanas-cabecera">
+        <button type="button" class="pestana-boton" [class.activa]="pestanaActiva() === 'diagnostico'" (click)="cambiarPestana('diagnostico')">
+          Diagnóstico
+        </button>
+        <button type="button" class="pestana-boton" [class.activa]="pestanaActiva() === 'receta'" (click)="cambiarPestana('receta')">
+          Receta médica
+        </button>
+        <button type="button" class="pestana-boton" [class.activa]="pestanaActiva() === 'examenes'" (click)="cambiarPestana('examenes')">
+          Exámenes solicitados
+        </button>
+      </div>
+
+      <!-- Pestaña 1: Diagnóstico -->
+      <div class="contenido-pestana" [hidden]="pestanaActiva() !== 'diagnostico'">
+        <div class="tarjeta-contenido" style="padding: 20px 24px">
+          <dl class="lista-clinica">
+            <dt>Diagnóstico</dt>
+            <dd>{{ datos.diagnostico }}</dd>
+
+            @if (datos.sintomas) {
+              <dt>Síntomas</dt>
+              <dd>{{ datos.sintomas }}</dd>
+            }
+            @if (datos.observaciones) {
+              <dt>Observaciones</dt>
+              <dd>{{ datos.observaciones }}</dd>
+            }
+            @if (datos.recomendaciones) {
+              <dt>Recomendaciones</dt>
+              <dd>{{ datos.recomendaciones }}</dd>
+            }
+          </dl>
+        </div>
+      </div>
+
+      <!-- Pestaña 2: Receta médica -->
+      <div class="contenido-pestana" [hidden]="pestanaActiva() !== 'receta'">
+        <div class="barra-accion-pestana">
+          <button type="button" class="btn-primary" (click)="recetarMedicamento()">
+            <span class="material-icons">add</span>
+            Agregar medicamento
+          </button>
+        </div>
+
+        @if (!datos.detalle_recetas?.length) {
+          <div class="tarjeta-contenido estado-vacio">
+            <div class="icono-circular">
+              <span class="material-icons">medication</span>
+            </div>
+            <p class="estado-vacio-titulo">No se han recetado medicamentos</p>
+            <p class="estado-vacio-texto">Agrega un medicamento con su dosis, frecuencia e indicaciones.</p>
+          </div>
+        } @else {
+          <div class="tarjeta-contenido">
+            <div class="tabla-envoltorio">
+              <table class="tabla">
+                <thead>
+                  <tr>
+                    <th>Medicamento</th>
+                    <th>Dosis</th>
+                    <th>Frecuencia</th>
+                    <th>Duración</th>
+                    <th>Indicaciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (detalle of datos.detalle_recetas; track detalle.id) {
+                    <tr>
+                      <td>{{ detalle.medicamento?.nombre }}</td>
+                      <td>{{ detalle.dosis }}</td>
+                      <td>{{ detalle.frecuencia }}</td>
+                      <td>{{ detalle.duracion_tratamiento }}</td>
+                      <td>{{ detalle.indicaciones || '—' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Pestaña 3: Exámenes solicitados -->
+      <div class="contenido-pestana" [hidden]="pestanaActiva() !== 'examenes'">
+        <div class="barra-accion-pestana">
+          <button type="button" class="btn-primary" (click)="solicitarExamen()">
+            <span class="material-icons">add</span>
+            Solicitar examen
+          </button>
+        </div>
+
+        @if (!datos.examenes_solicitados?.length) {
+          <div class="tarjeta-contenido estado-vacio">
+            <div class="icono-circular">
+              <span class="material-icons">science</span>
+            </div>
+            <p class="estado-vacio-titulo">No se han solicitado exámenes</p>
+            <p class="estado-vacio-texto">Solicita un examen para dar seguimiento al diagnóstico del paciente.</p>
+          </div>
+        } @else {
+          <div class="tarjeta-contenido">
+            <div class="tabla-envoltorio">
+              <table class="tabla">
+                <thead>
+                  <tr>
+                    <th>Examen</th>
+                    <th>Fecha solicitud</th>
+                    <th>Estado</th>
+                    <th>Resultado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (solicitud of datos.examenes_solicitados; track solicitud.id) {
+                    <tr>
+                      <td>{{ solicitud.examen?.nombre }}</td>
+                      <td>{{ solicitud.fecha_solicitud | date: 'short' }}</td>
+                      <td><span class="badge" [class]="colorEstado(solicitud.estado)">{{ solicitud.estado }}</span></td>
+                      <td>{{ solicitud.resultado || '—' }}</td>
+                      <td class="celda-acciones">
+                        <button type="button" class="btn-icon boton-accion-editar" (click)="editarExamenSolicitado(solicitud)" title="Actualizar">
+                          <span class="material-icons">edit</span>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

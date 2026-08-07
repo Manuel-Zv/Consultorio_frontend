@@ -1,0 +1,73 @@
+<div class="encabezado-pagina">
+  <div class="encabezado-textos">
+    <h1>Consultas</h1>
+    <p class="descripcion-pagina">Historial de consultas médicas registradas a partir de citas atendidas.</p>
+  </div>
+</div>
+
+<div class="filtros">
+  <div class="campo campo-con-icono campo-busqueda">
+    <label>Buscar por paciente, médico o diagnóstico</label>
+    <span class="material-icons">search</span>
+    <input class="campo-control" (input)="aplicarFiltro($event)" placeholder="Ej. Ana Pérez" />
+  </div>
+</div>
+
+@if (cargando()) {
+  <div class="cargando-contenedor">
+    <span class="spinner"></span>
+  </div>
+} @else if (!tabla.data.length) {
+  <div class="tarjeta-contenido estado-vacio">
+    <div class="icono-circular">
+      <span class="material-icons">medical_information</span>
+    </div>
+    <p class="estado-vacio-titulo">No hay consultas registradas</p>
+    <p class="estado-vacio-texto">Las consultas se crean desde una cita: márcala como atendida y registra el diagnóstico.</p>
+    <button type="button" class="btn-primary" routerLink="/panel/citas">
+      <span class="material-icons">event</span>
+      Ir a Citas
+    </button>
+  </div>
+} @else if (!tabla.filteredData.length) {
+  <div class="tarjeta-contenido estado-vacio">
+    <div class="icono-circular">
+      <span class="material-icons">search_off</span>
+    </div>
+    <p class="estado-vacio-titulo">Sin resultados</p>
+    <p class="estado-vacio-texto">No encontramos consultas que coincidan con tu búsqueda.</p>
+  </div>
+} @else {
+  <div class="tarjeta-contenido">
+    <div class="tabla-envoltorio">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Fecha de atención</th>
+            <th>Diagnóstico</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (consulta of tabla.paginatedData; track consulta.id) {
+            <tr>
+              <td>{{ consulta.cita?.paciente?.nombres }} {{ consulta.cita?.paciente?.apellidos }}</td>
+              <td>{{ consulta.cita?.medico?.nombres }} {{ consulta.cita?.medico?.apellidos }}</td>
+              <td>{{ consulta.fecha_atencion | date: 'medium' }}</td>
+              <td>{{ consulta.diagnostico }}</td>
+              <td class="celda-acciones">
+                <button type="button" class="btn-icon boton-accion-editar" (click)="verDetalle(consulta)" title="Ver detalle">
+                  <span class="material-icons">visibility</span>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-paginador [tabla]="tabla" />
+  </div>
+}

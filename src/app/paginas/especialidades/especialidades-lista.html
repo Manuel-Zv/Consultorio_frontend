@@ -1,0 +1,84 @@
+<div class="encabezado-pagina">
+  <div class="encabezado-textos">
+    <h1>Especialidades</h1>
+    <p class="descripcion-pagina">Gestión y catálogo de especialidades médicas de la clínica.</p>
+  </div>
+  @if (autenticacionService.esAdministrador()) {
+    <button type="button" class="btn-primary" (click)="nueva()">
+      <span class="material-icons">add</span>
+      Nueva especialidad
+    </button>
+  }
+</div>
+
+<div class="filtros">
+  <div class="campo campo-con-icono campo-busqueda">
+    <label>Buscar por nombre o descripción</label>
+    <span class="material-icons">search</span>
+    <input class="campo-control" (input)="aplicarFiltro($event)" placeholder="Ej. Odontología" />
+  </div>
+</div>
+
+@if (cargando()) {
+  <div class="cargando-contenedor">
+    <span class="spinner"></span>
+  </div>
+} @else if (!tabla.data.length) {
+  <div class="tarjeta-contenido estado-vacio">
+    <div class="icono-circular">
+      <span class="material-icons">local_hospital</span>
+    </div>
+    <p class="estado-vacio-titulo">No hay especialidades registradas</p>
+    <p class="estado-vacio-texto">Crea la primera especialidad para poder asignarla a los médicos de la clínica.</p>
+    @if (autenticacionService.esAdministrador()) {
+      <button type="button" class="btn-primary" (click)="nueva()">
+        <span class="material-icons">add</span>
+        Nueva especialidad
+      </button>
+    }
+  </div>
+} @else if (!tabla.filteredData.length) {
+  <div class="tarjeta-contenido estado-vacio">
+    <div class="icono-circular">
+      <span class="material-icons">search_off</span>
+    </div>
+    <p class="estado-vacio-titulo">Sin resultados</p>
+    <p class="estado-vacio-texto">No encontramos especialidades que coincidan con tu búsqueda.</p>
+  </div>
+} @else {
+  <div class="tarjeta-contenido">
+    <div class="tabla-envoltorio">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (especialidad of tabla.paginatedData; track especialidad.id) {
+            <tr>
+              <td>{{ especialidad.nombre }}</td>
+              <td>{{ especialidad.descripcion || '—' }}</td>
+              <td class="celda-acciones">
+                @if (autenticacionService.esAdministrador()) {
+                  <button type="button" class="btn-icon boton-accion-editar" (click)="editar(especialidad)" title="Editar">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button type="button" class="btn-icon boton-accion-eliminar" (click)="eliminar(especialidad)" title="Eliminar">
+                    <span class="material-icons">delete</span>
+                  </button>
+                } @else {
+                  <span class="etiqueta">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-paginador [tabla]="tabla" />
+  </div>
+}

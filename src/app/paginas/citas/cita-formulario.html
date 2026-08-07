@@ -1,0 +1,71 @@
+<div class="dialogo-cabecera">
+  <h2>{{ datos ? 'Editar' : 'Nueva' }} cita</h2>
+  <button type="button" class="btn-icon" (click)="cerrar()" aria-label="Cerrar">
+    <span class="material-icons">close</span>
+  </button>
+</div>
+
+<form [formGroup]="formulario" (ngSubmit)="guardar()">
+  <div class="dialogo-cuerpo campos">
+    @if (esPaciente()) {
+      <div class="campo">
+        <label>Paciente</label>
+        <div class="campo-control" style="background: var(--color-fondo); color: var(--color-texto-secundario)">
+          Se agendará para ti
+        </div>
+      </div>
+    } @else {
+      <div class="campo" [class.invalido]="formulario.get('paciente_id')?.invalid && formulario.get('paciente_id')?.touched">
+        <label>Paciente</label>
+        <select class="campo-control" formControlName="paciente_id">
+          <option [ngValue]="null" disabled>Selecciona un paciente</option>
+          @for (paciente of pacientes(); track paciente.id) {
+            <option [ngValue]="paciente.id">{{ paciente.nombres }} {{ paciente.apellidos }}</option>
+          }
+        </select>
+      </div>
+    }
+
+    <div class="campo" [class.invalido]="formulario.get('medico_id')?.invalid && formulario.get('medico_id')?.touched">
+      <label>Médico</label>
+      <select class="campo-control" formControlName="medico_id">
+        <option [ngValue]="null" disabled>Selecciona un médico</option>
+        @for (medico of medicos(); track medico.id) {
+          <option [ngValue]="medico.id">
+            {{ medico.nombres }} {{ medico.apellidos }} @if (medico.especialidad) { ({{ medico.especialidad.nombre }}) }
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="fila-doble">
+      <div class="campo" [class.invalido]="formulario.get('fecha')?.invalid && formulario.get('fecha')?.touched">
+        <label>Fecha de atención</label>
+        <input class="campo-control" type="date" [attr.min]="fechaMinima" formControlName="fecha" />
+      </div>
+      <div class="campo" [class.invalido]="formulario.get('hora')?.invalid && formulario.get('hora')?.touched">
+        <label>Hora</label>
+        <input class="campo-control" type="time" formControlName="hora" />
+      </div>
+    </div>
+
+    <div class="campo" [class.invalido]="formulario.get('modalidad')?.invalid && formulario.get('modalidad')?.touched">
+      <label>Modalidad</label>
+      <select class="campo-control" formControlName="modalidad">
+        <option value="" disabled>Selecciona</option>
+        <option value="presencial">Presencial</option>
+        <option value="virtual">Virtual</option>
+      </select>
+    </div>
+
+    <div class="campo" [class.invalido]="formulario.get('motivo_consulta')?.invalid && formulario.get('motivo_consulta')?.touched">
+      <label>Motivo de consulta</label>
+      <textarea class="campo-control" formControlName="motivo_consulta" rows="3"></textarea>
+    </div>
+  </div>
+
+  <div class="dialogo-acciones">
+    <button type="button" class="btn-outline" (click)="cerrar()">Cancelar</button>
+    <button type="submit" class="btn-primary">Guardar</button>
+  </div>
+</form>

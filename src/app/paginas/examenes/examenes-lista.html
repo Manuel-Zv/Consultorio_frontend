@@ -1,21 +1,21 @@
 <div class="encabezado-pagina">
   <div class="encabezado-textos">
-    <h1>Médicos</h1>
-    <p class="descripcion-pagina">Personal médico de la clínica y su especialidad asignada.</p>
+    <h1>Exámenes</h1>
+    <p class="descripcion-pagina">Catálogo de exámenes médicos disponibles para solicitar en las consultas.</p>
   </div>
   @if (autenticacionService.esAdministrador()) {
     <button type="button" class="btn-primary" (click)="nuevo()">
       <span class="material-icons">add</span>
-      Nuevo médico
+      Nuevo examen
     </button>
   }
 </div>
 
 <div class="filtros">
   <div class="campo campo-con-icono campo-busqueda">
-    <label>Buscar por nombre, identificación o especialidad</label>
+    <label>Buscar por código o nombre</label>
     <span class="material-icons">search</span>
-    <input class="campo-control" (input)="aplicarFiltro($event)" placeholder="Ej. Carlos Pérez" />
+    <input class="campo-control" (input)="aplicarFiltro($event)" placeholder="Ej. Hemograma" />
   </div>
 </div>
 
@@ -26,14 +26,14 @@
 } @else if (!tabla.data.length) {
   <div class="tarjeta-contenido estado-vacio">
     <div class="icono-circular">
-      <span class="material-icons">medical_services</span>
+      <span class="material-icons">science</span>
     </div>
-    <p class="estado-vacio-titulo">No hay médicos registrados</p>
-    <p class="estado-vacio-texto">Registra un médico y asígnale una especialidad para poder agendarle citas.</p>
+    <p class="estado-vacio-titulo">No hay exámenes registrados</p>
+    <p class="estado-vacio-texto">Registra los exámenes disponibles para poder solicitarlos en las consultas.</p>
     @if (autenticacionService.esAdministrador()) {
       <button type="button" class="btn-primary" (click)="nuevo()">
         <span class="material-icons">add</span>
-        Nuevo médico
+        Nuevo examen
       </button>
     }
   </div>
@@ -43,7 +43,7 @@
       <span class="material-icons">search_off</span>
     </div>
     <p class="estado-vacio-titulo">Sin resultados</p>
-    <p class="estado-vacio-texto">No encontramos médicos que coincidan con tu búsqueda.</p>
+    <p class="estado-vacio-texto">No encontramos exámenes que coincidan con tu búsqueda.</p>
   </div>
 } @else {
   <div class="tarjeta-contenido">
@@ -51,31 +51,28 @@
       <table class="tabla">
         <thead>
           <tr>
-            <th>Identificación</th>
-            <th>Nombre completo</th>
-            <th>Especialidad</th>
-            <th>Correo</th>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Costo</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          @for (medico of tabla.paginatedData; track medico.id) {
+          @for (examen of tabla.paginatedData; track examen.id) {
             <tr>
-              <td>{{ medico.numero_identificacion }}</td>
-              <td>{{ medico.nombres }} {{ medico.apellidos }}</td>
-              <td>{{ medico.especialidad?.nombre || '—' }}</td>
-              <td>{{ medico.correo_electronico }}</td>
+              <td>{{ examen.codigo }}</td>
+              <td>{{ examen.nombre }}</td>
+              <td>{{ examen.costo | number: '1.2-2' }}</td>
               <td class="celda-acciones">
-                <button type="button" class="btn-icon" [routerLink]="['/panel/medicos', medico.id]" title="Ver perfil">
-                  <span class="material-icons">visibility</span>
-                </button>
                 @if (autenticacionService.esAdministrador()) {
-                  <button type="button" class="btn-icon boton-accion-editar" (click)="editar(medico)" title="Editar">
+                  <button type="button" class="btn-icon boton-accion-editar" (click)="editar(examen)" title="Editar">
                     <span class="material-icons">edit</span>
                   </button>
-                  <button type="button" class="btn-icon boton-accion-eliminar" (click)="eliminar(medico)" title="Eliminar">
+                  <button type="button" class="btn-icon boton-accion-eliminar" (click)="eliminar(examen)" title="Eliminar">
                     <span class="material-icons">delete</span>
                   </button>
+                } @else {
+                  <span class="etiqueta">—</span>
                 }
               </td>
             </tr>

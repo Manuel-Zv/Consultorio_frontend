@@ -1,0 +1,133 @@
+<div class="encabezado-pagina">
+  <div class="encabezado-textos">
+    <h1>Citas</h1>
+    <p class="descripcion-pagina">Solicitudes de atención de pacientes, presenciales o virtuales.</p>
+  </div>
+  @if (!autenticacionService.esMedico()) {
+    <!-- Un medico atiende citas, no las solicita (regla de negocio validada tambien en el backend). -->
+    <button type="button" class="btn-primary" (click)="nueva()">
+      <span class="material-icons">add</span>
+      Nueva cita
+    </button>
+  }
+</div>
+
+<div class="filtros">
+  <div class="campo" style="max-width: 220px">
+    <label>Filtrar por estado</label>
+    <select class="campo-control" [(ngModel)]="filtroEstado" (change)="cargar()">
+      <option value="">Todos</option>
+      @for (estado of estadosDisponibles; track estado) {
+        <option [value]="estado">{{ estado }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="campo campo-con-icono campo-busqueda">
+    <label>Buscar por paciente, médico o motivo</label>
+    <span class="material-icons">search</span>
+    <input class="campo-control" (input)="aplicarFiltro($event)" placeholder="Ej. Juan Pérez" />
+  </div>
+</div>
+
+@if (cargando()) {
+  <div class="cargando-contenedor">
+    <span class="spinner"></span>
+  </div>
+} @else if (!tabla.data.length) {
+  <div class="tarjeta-contenido estado-vacio">
+    <div class="icono-circular">
+      <span class="material-icons">event_busy</span>
+    </div>
+    <p class="estado-vacio-titulo">No hay citas registradas</p>
+    <p class="estado-vacio-texto">Agenda una cita para un paciente y comienza a llevar el control de sus atenciones.</p>
+    @if (!autenticacionService.esMedico()) {
+      <button type="button" class="btn-primary" (click)="nueva()">
+        <span class="material-icons">add</span>
+        Nueva cita
+      </button>
+    }
+  </div>
+} @else if (!tabla.filteredData.length) {
+  <div class="tarjeta-contenido estado-vacio">
+    <div class="icono-circular">
+      <span class="material-icons">search_off</span>
+    </div>
+    <p class="estado-vacio-titulo">Sin resultados</p>
+    <p class="estado-vacio-texto">No encontramos citas que coincidan con tu búsqueda.</p>
+  </div>
+} @else {
+  <div class="tarjeta-contenido">
+    <div class="tabla-envoltorio">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Fecha y hora</th>
+            <th>Modalidad</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cita of tabla.paginatedData; track cita.id) {
+            <tr>
+              <td>{{ cita.paciente?.nombres }} {{ cita.paciente?.apellidos }}</td>
+              <td>{{ cita.medico?.nombres }} {{ cita.medico?.apellidos }}</td>
+              <td>{{ cita.fecha_hora_atencion | date: 'medium' }}</td>
+              <td>{{ cita.modalidad }}</td>
+              <td><span class="badge" [class]="colorEstado(cita.estado)">{{ cita.estado }}</span></td>
+              <td class="celda-acciones">
+                @if (!autenticacionService.esPaciente()) {
+                  <!-- Reprogramar (medico/fecha/hora) es cosa del medico dueño o de administracion. -->
+                  <button type="button" class="btn-icon boton-accion-editar" (click)="editar(cita)" title="Editar">
+                    <span class="material-icons">edit</span>
+                  </button>
+                }
+
+                @if (autenticacionService.esPaciente()) {
+                  @if (cita.estado === 'solicitada' || cita.estado === 'confirmada') {
+                    <button type="button" class="btn-icon boton-accion-eliminar" (click)="eliminar(cita)" title="Cancelar cita">
+                      <span class="material-icons">event_busy</span>
+                    </button>
+                  }
+                } @else {
+                  <details class="menu-desplegable">
+                    <summary class="btn-icon" title="Cambiar estado">
+                      <span class="material-icons">sync_alt</span>
+                    </summary>
+                    <div class="menu-panel">
+                      @for (estado of estadosDisponibles; track estado) {
+                        <button
+                          type="button"
+                          class="menu-item"
+                          #detalleEstado
+                          (click)="cambiarEstado(cita, estado); detalleEstado.closest('details')!.open = false"
+                        >
+                          {{ estado }}
+                        </button>
+                      }
+                    </div>
+                  </details>
+
+                  @if (cita.estado !== 'cancelada' && cita.estado !== 'no_asistida' && !cita.consulta) {
+                    <button type="button" class="btn-icon" (click)="registrarConsulta(cita)" title="Registrar consulta">
+                      <span class="material-icons">medical_information</span>
+                    </button>
+                  }
+
+                  <button type="button" class="btn-icon boton-accion-eliminar" (click)="eliminar(cita)" title="Cancelar cita">
+                    <span class="material-icons">delete</span>
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-paginador [tabla]="tabla" />
+  </div>
+}

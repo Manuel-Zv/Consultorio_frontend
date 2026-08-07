@@ -1,0 +1,46 @@
+<div class="dialogo-cabecera">
+  <h2>Recetar medicamento</h2>
+  <button type="button" class="btn-icon" (click)="cerrar()" aria-label="Cerrar">
+    <span class="material-icons">close</span>
+  </button>
+</div>
+
+<form [formGroup]="formulario" (ngSubmit)="guardar()">
+  <div class="dialogo-cuerpo campos">
+    <div class="campo" [class.invalido]="formulario.get('medicamento_id')?.invalid && formulario.get('medicamento_id')?.touched">
+      <label>Medicamento</label>
+      <select class="campo-control" formControlName="medicamento_id">
+        <option [ngValue]="null" disabled>Selecciona un medicamento</option>
+        @for (medicamento of medicamentos(); track medicamento.id) {
+          <option [ngValue]="medicamento.id">{{ medicamento.nombre }} ({{ medicamento.codigo }})</option>
+        }
+      </select>
+    </div>
+
+    <div class="fila-doble">
+      <div class="campo" [class.invalido]="formulario.get('dosis')?.invalid && formulario.get('dosis')?.touched">
+        <label>Dosis</label>
+        <input class="campo-control" formControlName="dosis" placeholder="1 tableta" />
+      </div>
+      <div class="campo" [class.invalido]="formulario.get('frecuencia')?.invalid && formulario.get('frecuencia')?.touched">
+        <label>Frecuencia</label>
+        <input class="campo-control" formControlName="frecuencia" placeholder="Cada 8 horas" />
+      </div>
+    </div>
+
+    <div class="campo" [class.invalido]="formulario.get('duracion_tratamiento')?.invalid && formulario.get('duracion_tratamiento')?.touched">
+      <label>Duración del tratamiento</label>
+      <input class="campo-control" formControlName="duracion_tratamiento" placeholder="7 días" />
+    </div>
+
+    <div class="campo">
+      <label>Indicaciones</label>
+      <textarea class="campo-control" formControlName="indicaciones" rows="2"></textarea>
+    </div>
+  </div>
+
+  <div class="dialogo-acciones">
+    <button type="button" class="btn-outline" (click)="cerrar()">Cancelar</button>
+    <button type="submit" class="btn-primary">Guardar</button>
+  </div>
+</form>

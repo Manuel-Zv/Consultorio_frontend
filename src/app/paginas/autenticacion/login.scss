@@ -1,0 +1,291 @@
+:host {
+  display: block;
+}
+
+/* ============================================================
+   Fondo de la pantalla: la tarjeta de login "flota" encima
+   ============================================================ */
+.fondo-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 32px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(87, 135, 70, 0.1) 0%, rgba(87, 135, 70, 0) 45%),
+    radial-gradient(circle at 85% 80%, rgba(43, 170, 177, 0.08) 0%, rgba(43, 170, 177, 0) 45%),
+    var(--color-fondo);
+}
+
+.pantalla-login {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  width: 100%;
+  max-width: 1000px;
+  min-height: 580px;
+  max-height: 640px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--color-tarjeta);
+  box-shadow:
+    0 30px 60px -15px rgba(15, 23, 42, 0.35),
+    0 10px 25px -5px rgba(15, 23, 42, 0.15);
+}
+
+/* ============================================================
+   Columna izquierda: panel de marca institucional
+   ============================================================ */
+.panel-marca {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 36px 32px;
+  background: linear-gradient(155deg, #14261f 0%, #1c4536 55%, #2baab1 130%);
+  color: #ffffff;
+  text-align: center;
+  box-sizing: border-box;
+
+  /* Encabezado con marca */
+  &-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+
+    .marca-titulo {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .marca-subtitulo {
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+  }
+
+  /* Ilustración central */
+  .ilustracion-medica {
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    max-height: 450px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.25));
+    margin: 12px 0;
+    z-index: 1;
+  }
+
+  /* Texto inferior */
+  .marca-tagline {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    opacity: 0.8;
+    max-width: 280px;
+    z-index: 1;
+  }
+}
+
+/* Formas decorativas orgánicas de fondo */
+.panel-marca-forma {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(10px);
+  opacity: 0.35;
+  pointer-events: none;
+
+  &-1 {
+    width: 340px;
+    height: 340px;
+    top: -110px;
+    right: -100px;
+    background: radial-gradient(circle, rgba(87, 135, 70, 0.55) 0%, rgba(87, 135, 70, 0) 70%);
+  }
+
+  &-2 {
+    width: 300px;
+    height: 300px;
+    bottom: -130px;
+    left: -90px;
+    background: radial-gradient(circle, rgba(43, 170, 177, 0.4) 0%, rgba(43, 170, 177, 0) 70%);
+  }
+}
+
+/* ============================================================
+   Columna derecha: formulario de acceso
+   ============================================================ */
+.panel-formulario {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  background: var(--color-tarjeta);
+  overflow-y: auto;
+
+  h2 {
+    margin: 0 0 6px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-texto);
+  }
+}
+
+.formulario-contenedor {
+  width: 100%;
+  max-width: 340px;
+}
+
+.marca-movil {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+
+  span {
+    font-weight: 700;
+    color: var(--color-texto);
+    font-size: 0.95rem;
+  }
+}
+
+.subtitulo-formulario {
+  margin: 0 0 24px;
+  color: var(--color-texto-secundario);
+  font-size: 0.88rem;
+}
+
+/* Estructura de campos e inputs */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-texto);
+  }
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.campo-control {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #1c4536;
+    box-shadow: 0 0 0 3px rgba(28, 69, 54, 0.12);
+  }
+
+  &.con-ojo {
+    padding-right: 70px;
+  }
+}
+
+.btn-ojo {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+
+  &:hover {
+    color: var(--color-texto);
+  }
+}
+
+.campo-error {
+  font-size: 0.75rem;
+  color: var(--color-peligro, #ef4444);
+}
+
+.mensaje-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--color-peligro-suave, #fee2e2);
+  color: var(--color-peligro, #dc2626);
+  font-size: 0.82rem;
+}
+
+.boton-ingresar {
+  height: 44px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin-top: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.pie-formulario {
+  margin: 24px 0 0;
+  text-align: center;
+  color: var(--color-texto-secundario);
+  font-size: 0.75rem;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 900px) {
+  .fondo-login {
+    padding: 0;
+  }
+
+  .pantalla-login {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    max-height: none;
+    min-height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .panel-marca {
+    display: none;
+  }
+
+  .marca-movil {
+    display: flex;
+  }
+
+  .panel-formulario {
+    padding: 24px;
+  }
+}
