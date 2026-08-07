@@ -1,0 +1,153 @@
+<h1>Bienvenido/a{{ primerNombre() ? ', ' + primerNombre() : '' }}</h1>
+
+@if (autenticacionService.esAdministrador()) {
+  <p>Catálogos y cuentas de médicos y pacientes de la clínica universitaria.</p>
+} @else if (autenticacionService.esMedico()) {
+  <p>Tu agenda y tus consultas de la clínica universitaria.</p>
+} @else {
+  <p>Tus citas y tu historial médico en la clínica universitaria.</p>
+}
+
+@if (cargando()) {
+  <div class="cargando-contenedor">
+    <span class="spinner"></span>
+  </div>
+} @else {
+  <div class="estadisticas">
+    @for (estadistica of estadisticas(); track estadistica.etiqueta) {
+      <a [routerLink]="estadistica.ruta" class="tarjeta-contenido tarjeta-estadistica {{ estadistica.color }}">
+        <span class="material-icons">{{ estadistica.icono }}</span>
+        <div class="valores">
+          <span class="numero">{{ estadistica.valor }}</span>
+          <span class="etiqueta">{{ estadistica.etiqueta }}</span>
+        </div>
+      </a>
+    }
+  </div>
+
+  @if (autenticacionService.esMedico()) {
+    <h2 class="titulo-accesos">Agenda de hoy</h2>
+    @if (!agendaHoy().length) {
+      <div class="tarjeta-contenido estado-vacio">
+        <div class="icono-circular">
+          <span class="material-icons">event_available</span>
+        </div>
+        <p class="estado-vacio-titulo">Sin citas para hoy</p>
+        <p class="estado-vacio-texto">No tienes citas activas agendadas para el día de hoy.</p>
+      </div>
+    } @else {
+      <div class="tarjeta-contenido">
+        <div class="tabla-envoltorio">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Paciente</th>
+                <th>Modalidad</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (cita of agendaHoy(); track cita.id) {
+                <tr>
+                  <td>{{ cita.fecha_hora_atencion | date: 'shortTime' }}</td>
+                  <td>{{ cita.paciente?.nombres }} {{ cita.paciente?.apellidos }}</td>
+                  <td>{{ cita.modalidad }}</td>
+                  <td><span class="badge" [class]="colorEstado(cita.estado)">{{ cita.estado }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+
+  @if (autenticacionService.esPaciente()) {
+    <h2 class="titulo-accesos">Tu próxima cita</h2>
+    @if (proximaCita(); as cita) {
+      <div class="tarjeta-contenido tarjeta-info">
+        <p><strong>Médico:</strong> {{ cita.medico?.nombres }} {{ cita.medico?.apellidos }} @if (cita.medico?.especialidad) { ({{ cita.medico?.especialidad?.nombre }}) }</p>
+        <p><strong>Fecha y hora:</strong> {{ cita.fecha_hora_atencion | date: 'full' }}</p>
+        <p><strong>Modalidad:</strong> {{ cita.modalidad }}</p>
+        <p><strong>Estado:</strong> <span class="badge" [class]="colorEstado(cita.estado)">{{ cita.estado }}</span></p>
+      </div>
+    } @else {
+      <div class="tarjeta-contenido estado-vacio">
+        <div class="icono-circular">
+          <span class="material-icons">event_busy</span>
+        </div>
+        <p class="estado-vacio-titulo">No tienes citas próximas</p>
+        <p class="estado-vacio-texto">Solicita una cita con el médico que necesites.</p>
+        <a class="btn-primary" routerLink="/panel/citas">
+          <span class="material-icons">add</span>
+          Solicitar cita
+        </a>
+      </div>
+    }
+  }
+}
+
+<h2 class="titulo-accesos">Accesos rápidos</h2>
+<div class="tarjetas">
+  @if (autenticacionService.esAdministrador()) {
+    <a class="tarjeta-contenido tarjeta-accion" routerLink="/panel/pacientes">
+      <span class="material-icons">personal_injury</span>
+      <span>Administrar pacientes</span>
+    </a>
+    <a class="tarjeta-contenido tarjeta-accion" routerLink="/panel/medicos">
+      <span class="material-icons">medical_services</span>
+      <span>Administrar médicos</span>
+    </a>
+    <a class="tarjeta-contenido tarjeta-accion" routerLink="/panel/especialidades">
+      <span class="material-icons">local_hospital</span>
+      <span>Especialidades</span>
+    </a>
+    <a class="tarjeta-contenido tarjeta-accion" routerLink="/panel/medicamentos">
+      <span class="material-icons">medication</span>
+      <span>Medicamentos</span>
+    </a>
+    <a class="tarjeta-contenido tarjeta-accion" routerLink="/panel/examenes">
+      <span class="material-icons">science</span>
+      <span>Exámenes</span>
+    </a>
+  } @else if (autenticacionService.esMedico()) {
+    <a class="tarjeta-contenido tarjeta-accion" routerLink="/panel/citas">
+      <span class="material-icons">event</span>
+      <span>Mi agenda</span>
+    </a>
+    <a class="tarjeta-contenido tarjeta-accion" routerLink="/panel/consultas">
+      <span class="material-icons">medical_information</span>
+      <span>Mis consultas</span>
+    </a>
+    <a class="tarjeta-contenido tarjeta-accion" routerLink="/panel/pacientes">
+      <span class="material-icons">personal_injury</span>
+      <span>Ver pacientes</span>
+    </a>
+    @if (autenticacionService.usuario()?.medico_id) {
+      <a class="tarjeta-contenido tarjeta-accion" [routerLink]="['/panel/medicos', autenticacionService.usuario()?.medico_id]">
+        <span class="material-icons">badge</span>
+        <span>Mi perfil</span>
+      </a>
+    }
+  } @else {
+    <a class="tarjeta-contenido tarjeta-accion" routerLink="/panel/citas">
+      <span class="material-icons">add</span>
+      <span>Solicitar cita</span>
+    </a>
+    <a class="tarjeta-contenido tarjeta-accion" routerLink="/panel/citas">
+      <span class="material-icons">event</span>
+      <span>Mis citas</span>
+    </a>
+    <a class="tarjeta-contenido tarjeta-accion" routerLink="/panel/consultas">
+      <span class="material-icons">medical_information</span>
+      <span>Mi historial médico</span>
+    </a>
+    @if (autenticacionService.usuario()?.paciente_id) {
+      <a class="tarjeta-contenido tarjeta-accion" [routerLink]="['/panel/pacientes', autenticacionService.usuario()?.paciente_id]">
+        <span class="material-icons">badge</span>
+        <span>Mi perfil</span>
+      </a>
+    }
+  }
+</div>

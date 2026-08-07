@@ -1,0 +1,73 @@
+<div class="dialogo-cabecera">
+  <h2>{{ datos ? 'Editar' : 'Nuevo' }} paciente</h2>
+  <button type="button" class="btn-icon" (click)="cerrar()" aria-label="Cerrar">
+    <span class="material-icons">close</span>
+  </button>
+</div>
+
+<form [formGroup]="formulario" (ngSubmit)="guardar()">
+  <div class="dialogo-cuerpo campos">
+    <div class="fila-doble">
+      <div class="campo" [class.invalido]="formulario.get('numero_identificacion')?.invalid && formulario.get('numero_identificacion')?.touched">
+        <label>Número de identificación</label>
+        <input class="campo-control" formControlName="numero_identificacion" />
+      </div>
+      <div class="campo" [class.invalido]="formulario.get('tipo_paciente')?.invalid && formulario.get('tipo_paciente')?.touched">
+        <label>Tipo de paciente</label>
+        <select class="campo-control" formControlName="tipo_paciente">
+          <option value="" disabled>Selecciona</option>
+          <option value="estudiante">Estudiante</option>
+          <option value="docente">Docente</option>
+          <option value="administrativo">Administrativo</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fila-doble">
+      <div class="campo" [class.invalido]="formulario.get('nombres')?.invalid && formulario.get('nombres')?.touched">
+        <label>Nombres</label>
+        <input class="campo-control" formControlName="nombres" />
+      </div>
+      <div class="campo" [class.invalido]="formulario.get('apellidos')?.invalid && formulario.get('apellidos')?.touched">
+        <label>Apellidos</label>
+        <input class="campo-control" formControlName="apellidos" />
+      </div>
+    </div>
+
+    <div class="fila-doble">
+      <div class="campo" [class.invalido]="formulario.get('fecha_nacimiento')?.invalid && formulario.get('fecha_nacimiento')?.touched">
+        <label>Fecha de nacimiento</label>
+        <input class="campo-control" type="date" [max]="hoy" formControlName="fecha_nacimiento" />
+      </div>
+      <div class="campo" [class.invalido]="formulario.get('sexo')?.invalid && formulario.get('sexo')?.touched">
+        <label>Sexo</label>
+        <select class="campo-control" formControlName="sexo">
+          <option value="" disabled>Selecciona</option>
+          <option value="M">Masculino</option>
+          <option value="F">Femenino</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="campo" [class.invalido]="formulario.get('correo_electronico')?.invalid && formulario.get('correo_electronico')?.touched">
+      <label>Correo electrónico</label>
+      <input class="campo-control" type="email" formControlName="correo_electronico" />
+    </div>
+
+    <div class="fila-doble">
+      <div class="campo">
+        <label>Teléfono</label>
+        <input class="campo-control" formControlName="telefono" />
+      </div>
+      <div class="campo">
+        <label>Dirección</label>
+        <input class="campo-control" formControlName="direccion" />
+      </div>
+    </div>
+  </div>
+
+  <div class="dialogo-acciones">
+    <button type="button" class="btn-outline" (click)="cerrar()">Cancelar</button>
+    <button type="submit" class="btn-primary">Guardar</button>
+  </div>
+</form>

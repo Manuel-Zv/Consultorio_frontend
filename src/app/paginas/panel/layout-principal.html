@@ -1,0 +1,57 @@
+<div class="contenedor">
+  <div class="respaldo-movil" [class.visible]="esMovil() && sidebarAbierta()" (click)="sidebarAbierta.set(false)"></div>
+
+  <aside class="barra-lateral" [class.abierta]="!esMovil() || sidebarAbierta()">
+    <div class="marca">
+      <div class="marca-icono">
+        <span class="material-icons">local_hospital</span>
+      </div>
+      <div class="marca-textos">
+        <span class="marca-titulo">Clínica Universitaria</span>
+        <span class="marca-subtitulo">ESPAM MFL</span>
+      </div>
+    </div>
+    <nav class="nav-lista">
+      @for (opcion of opciones(); track opcion.ruta) {
+        <a
+          class="nav-item"
+          [routerLink]="opcion.ruta"
+          [routerLinkActiveOptions]="{ exact: opcion.ruta === '/panel' }"
+          routerLinkActive="activo"
+          (click)="cerrarSidebarSiMovil()"
+        >
+          <span class="material-icons">{{ opcion.icono }}</span>
+          <span>{{ opcion.etiqueta }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <div class="zona-contenido">
+    <header class="barra-superior">
+      @if (esMovil()) {
+        <button type="button" class="btn-icon" (click)="alternarSidebar()" title="Menú">
+          <span class="material-icons">menu</span>
+        </button>
+      }
+      <span class="espaciador"></span>
+
+      <div class="usuario">
+        <div class="avatar">{{ iniciales() }}</div>
+        <div class="usuario-textos">
+          <span class="usuario-nombre">{{ autenticacionService.usuario()?.nombre }}</span>
+          <span class="usuario-rol">{{ autenticacionService.usuario()?.rol }}</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn-outline boton-salir" (click)="cerrarSesion()">
+        <span class="material-icons">logout</span>
+        Salir
+      </button>
+    </header>
+
+    <div class="contenido">
+      <router-outlet />
+    </div>
+  </div>
+</div>

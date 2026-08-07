@@ -1,0 +1,88 @@
+<div class="encabezado-pagina">
+  <div class="encabezado-textos">
+    <h1>Medicamentos</h1>
+    <p class="descripcion-pagina">Catálogo de medicamentos disponibles para recetar en las consultas.</p>
+  </div>
+  @if (autenticacionService.esAdministrador()) {
+    <button type="button" class="btn-primary" (click)="nuevo()">
+      <span class="material-icons">add</span>
+      Nuevo medicamento
+    </button>
+  }
+</div>
+
+<div class="filtros">
+  <div class="campo campo-con-icono campo-busqueda">
+    <label>Buscar por código o nombre</label>
+    <span class="material-icons">search</span>
+    <input class="campo-control" (input)="aplicarFiltro($event)" placeholder="Ej. Paracetamol" />
+  </div>
+</div>
+
+@if (cargando()) {
+  <div class="cargando-contenedor">
+    <span class="spinner"></span>
+  </div>
+} @else if (!tabla.data.length) {
+  <div class="tarjeta-contenido estado-vacio">
+    <div class="icono-circular">
+      <span class="material-icons">medication</span>
+    </div>
+    <p class="estado-vacio-titulo">No hay medicamentos registrados</p>
+    <p class="estado-vacio-texto">Registra los medicamentos disponibles para poder recetarlos en las consultas.</p>
+    @if (autenticacionService.esAdministrador()) {
+      <button type="button" class="btn-primary" (click)="nuevo()">
+        <span class="material-icons">add</span>
+        Nuevo medicamento
+      </button>
+    }
+  </div>
+} @else if (!tabla.filteredData.length) {
+  <div class="tarjeta-contenido estado-vacio">
+    <div class="icono-circular">
+      <span class="material-icons">search_off</span>
+    </div>
+    <p class="estado-vacio-titulo">Sin resultados</p>
+    <p class="estado-vacio-texto">No encontramos medicamentos que coincidan con tu búsqueda.</p>
+  </div>
+} @else {
+  <div class="tarjeta-contenido">
+    <div class="tabla-envoltorio">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Presentación</th>
+            <th>Concentración</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (medicamento of tabla.paginatedData; track medicamento.id) {
+            <tr>
+              <td>{{ medicamento.codigo }}</td>
+              <td>{{ medicamento.nombre }}</td>
+              <td>{{ medicamento.presentacion || '—' }}</td>
+              <td>{{ medicamento.concentracion || '—' }}</td>
+              <td class="celda-acciones">
+                @if (autenticacionService.esAdministrador()) {
+                  <button type="button" class="btn-icon boton-accion-editar" (click)="editar(medicamento)" title="Editar">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button type="button" class="btn-icon boton-accion-eliminar" (click)="eliminar(medicamento)" title="Eliminar">
+                    <span class="material-icons">delete</span>
+                  </button>
+                } @else {
+                  <span class="etiqueta">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-paginador [tabla]="tabla" />
+  </div>
+}

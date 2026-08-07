@@ -1,0 +1,83 @@
+<div class="encabezado-pagina">
+  <div class="encabezado-textos">
+    <h1>Pacientes</h1>
+    <p class="descripcion-pagina">Estudiantes, docentes y personal administrativo atendidos en la clínica.</p>
+  </div>
+  <button type="button" class="btn-primary" (click)="nuevo()">
+    <span class="material-icons">add</span>
+    Nuevo paciente
+  </button>
+</div>
+
+<div class="filtros">
+  <div class="campo campo-con-icono campo-busqueda">
+    <label>Buscar por nombre, identificación o correo</label>
+    <span class="material-icons">search</span>
+    <input class="campo-control" (input)="aplicarFiltro($event)" placeholder="Ej. Ana Pérez" />
+  </div>
+</div>
+
+@if (cargando()) {
+  <div class="cargando-contenedor">
+    <span class="spinner"></span>
+  </div>
+} @else if (!tabla.data.length) {
+  <div class="tarjeta-contenido estado-vacio">
+    <div class="icono-circular">
+      <span class="material-icons">personal_injury</span>
+    </div>
+    <p class="estado-vacio-titulo">No hay pacientes registrados</p>
+    <p class="estado-vacio-texto">Registra un paciente para poder agendarle citas y llevar su historial médico.</p>
+    <button type="button" class="btn-primary" (click)="nuevo()">
+      <span class="material-icons">add</span>
+      Nuevo paciente
+    </button>
+  </div>
+} @else if (!tabla.filteredData.length) {
+  <div class="tarjeta-contenido estado-vacio">
+    <div class="icono-circular">
+      <span class="material-icons">search_off</span>
+    </div>
+    <p class="estado-vacio-titulo">Sin resultados</p>
+    <p class="estado-vacio-texto">No encontramos pacientes que coincidan con tu búsqueda.</p>
+  </div>
+} @else {
+  <div class="tarjeta-contenido">
+    <div class="tabla-envoltorio">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Identificación</th>
+            <th>Nombre completo</th>
+            <th>Tipo</th>
+            <th>Correo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (paciente of tabla.paginatedData; track paciente.id) {
+            <tr>
+              <td>{{ paciente.numero_identificacion }}</td>
+              <td>{{ paciente.nombres }} {{ paciente.apellidos }}</td>
+              <td><span class="badge badge-neutro">{{ paciente.tipo_paciente }}</span></td>
+              <td>{{ paciente.correo_electronico }}</td>
+              <td class="celda-acciones">
+                <button type="button" class="btn-icon" [routerLink]="['/panel/pacientes', paciente.id]" title="Ver perfil">
+                  <span class="material-icons">visibility</span>
+                </button>
+                <button type="button" class="btn-icon boton-accion-editar" (click)="editar(paciente)" title="Editar">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button type="button" class="btn-icon boton-accion-eliminar" (click)="eliminar(paciente)" title="Eliminar">
+                  <span class="material-icons">delete</span>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-paginador [tabla]="tabla" />
+  </div>
+}

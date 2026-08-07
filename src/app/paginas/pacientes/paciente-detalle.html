@@ -1,0 +1,84 @@
+@if (cargando()) {
+  <div class="cargando-contenedor">
+    <span class="spinner"></span>
+  </div>
+} @else if (paciente(); as datos) {
+  <div class="encabezado-pagina">
+    <div class="encabezado-textos">
+      <h1>
+        <button type="button" class="btn-icon" routerLink="/panel/pacientes" title="Volver a pacientes">
+          <span class="material-icons">arrow_back</span>
+        </button>
+        {{ datos.nombres }} {{ datos.apellidos }}
+      </h1>
+      <p class="descripcion-pagina">Perfil del paciente e historial de citas.</p>
+    </div>
+  </div>
+
+  <div class="tarjeta-contenido tarjeta-info">
+    <p><strong>Identificación:</strong> {{ datos.numero_identificacion }}</p>
+    <p><strong>Tipo:</strong> {{ datos.tipo_paciente }}</p>
+    <p><strong>Fecha de nacimiento:</strong> {{ datos.fecha_nacimiento | date: 'longDate' }}</p>
+    <p><strong>Sexo:</strong> {{ datos.sexo === 'M' ? 'Masculino' : 'Femenino' }}</p>
+    <p><strong>Correo:</strong> {{ datos.correo_electronico }}</p>
+    @if (datos.telefono) {
+      <p><strong>Teléfono:</strong> {{ datos.telefono }}</p>
+    }
+    @if (datos.direccion) {
+      <p><strong>Dirección:</strong> {{ datos.direccion }}</p>
+    }
+  </div>
+
+  @if (puedeVerCitas) {
+    <div class="seccion">
+      <div class="encabezado-pagina">
+        <div class="encabezado-textos">
+          <h2>Historial de citas</h2>
+        </div>
+      </div>
+
+      @if (!citas().length) {
+        <div class="tarjeta-contenido estado-vacio">
+          <div class="icono-circular">
+            <span class="material-icons">event_busy</span>
+          </div>
+          <p class="estado-vacio-titulo">Sin citas registradas</p>
+          <p class="estado-vacio-texto">Este paciente todavía no tiene citas agendadas.</p>
+        </div>
+      } @else {
+        <div class="tarjeta-contenido">
+          <div class="tabla-envoltorio">
+            <table class="tabla">
+              <thead>
+                <tr>
+                  <th>Médico</th>
+                  <th>Fecha y hora</th>
+                  <th>Modalidad</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (cita of citas(); track cita.id) {
+                  <tr>
+                    <td>{{ cita.medico?.nombres }} {{ cita.medico?.apellidos }}</td>
+                    <td>{{ cita.fecha_hora_atencion | date: 'medium' }}</td>
+                    <td>{{ cita.modalidad }}</td>
+                    <td><span class="badge" [class]="colorEstado(cita.estado)">{{ cita.estado }}</span></td>
+                    <td class="celda-acciones">
+                      @if (cita.consulta) {
+                        <button type="button" class="btn-icon boton-accion-editar" (click)="verConsulta(cita)" title="Ver consulta">
+                          <span class="material-icons">visibility</span>
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  }
+}
