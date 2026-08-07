@@ -1,0 +1,55 @@
+/* Entrada real de Tailwind v4. Va en un .css aparte (no .scss) a propósito:
+   cuando este @import vivía dentro de styles.scss, el compilador de Sass lo
+   resolvía primero (con @import, ya deprecado) e insertaba el CSS fuente de
+   Tailwind como texto plano ANTES de que @tailwindcss/postcss pudiera
+   procesarlo — el resultado nunca generaba las variables :root (--color-*),
+   solo dejaba los bloques @theme/@layer literales sin interpretar, y todo
+   el tema quedaba invisible (fondo/texto transparentes → texto negro sobre
+   fondo oscuro del sistema). Al vivir en un .css normal, Angular lo entrega
+   intacto a PostCSS/Tailwind sin que Sass lo toque primero. */
+@import 'tailwindcss';
+
+/* "static" es obligatorio aquí: Tailwind v4 detecta automáticamente qué
+   variables/clases se usan escaneando HTML/TS en busca de nombres de clase,
+   y descarta ("tree-shaking") lo que no detecta. Como estas variables solo
+   se consumen con var(--color-primario) dentro de archivos .scss (nunca como
+   clase bg-primario en una plantilla), Tailwind nunca las "veía" usadas y
+   las eliminaba del CSS final — por eso todo el tema quedaba invisible.
+   "static" fuerza que se generen siempre, sin depender de esa detección. */
+@theme static {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Paleta institucional ESPAM MFL (verde), tomada de la piel "verde" del
+     sitio oficial espam.edu.ec: primario #578746/#416535, oscuro #285849,
+     acento secundario turquesa #2baab1. */
+  --color-sidebar: #14261f;
+  --color-sidebar-fuerte: #1c332a;
+  --color-sidebar-hover: rgba(255, 255, 255, 0.08);
+  --color-sidebar-activo: rgba(87, 135, 70, 0.4);
+  --color-sidebar-texto: #c9d9cd;
+  --color-sidebar-texto-activo: #ffffff;
+
+  --color-primario: #285849;
+  --color-primario-hover: #1c4536;
+  --color-primario-suave: #dcece4;
+
+  --color-fondo: #f7faf8;
+  --color-tarjeta: #ffffff;
+  --color-borde: #dde5e0;
+  --color-texto: #1e2a24;
+  --color-texto-secundario: #5f6f67;
+
+  --color-tabla-header-bg: #eef3f0;
+  --color-tabla-header-texto: #47564d;
+  --color-fila-hover: #f7faf8;
+
+  --color-peligro: #ef4444;
+  --color-peligro-hover: #dc2626;
+  --color-peligro-suave: #fef2f2;
+  --color-exito: #16a34a;
+  --color-exito-suave: #dcfce7;
+  --color-advertencia: #b46a1a;
+  --color-advertencia-suave: #fff3d6;
+  --color-info: #2baab1;
+  --color-info-suave: #e3f4f4;
+}

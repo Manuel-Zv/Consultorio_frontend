@@ -1,0 +1,907 @@
+/* Sistema de diseño "Dashboard SaaS Médico Institucional", ahora 100% Tailwind
+   (sin @angular/material). La importación de Tailwind y los tokens de color
+   (@theme) viven en src/tailwind.css (archivo .css puro, no .scss) — ver ese
+   archivo para el porqué: Sass rompía la generación de las variables :root
+   cuando @import 'tailwindcss' estaba en un .scss. */
+
+html {
+  height: 100%;
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--font-sans);
+  margin: 0;
+  height: 100%;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  color: var(--color-texto);
+  margin: 0;
+}
+
+.material-icons {
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* ============================================================
+   Botones — reemplazan mat-flat-button / mat-stroked-button / mat-icon-button
+   ============================================================ */
+/* Nota: sin @apply — en este pipeline (Sass compilando .scss antes de que
+   @tailwindcss/postcss procese el resultado) @apply no se expandía y quedaba
+   como texto literal en el CSS final. Se escribe en CSS plano usando los
+   mismos tokens de @theme; sigue siendo "Tailwind" (mismas custom properties,
+   mismo sistema), solo que las utilidades repetidas se extraen a mano. */
+.btn,
+.btn-primary,
+.btn-outline,
+.btn-texto,
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+
+  &:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+
+.btn-primary {
+  background: var(--color-primario);
+  color: #ffffff;
+  &:hover:not(:disabled) {
+    background: var(--color-primario-hover);
+  }
+}
+
+.btn-outline {
+  background: #ffffff;
+  border: 1px solid var(--color-borde);
+  color: var(--color-texto);
+  &:hover:not(:disabled) {
+    background: var(--color-fondo);
+  }
+}
+
+.btn-texto {
+  background: none;
+  color: var(--color-texto-secundario);
+  &:hover:not(:disabled) {
+    background: var(--color-fondo);
+  }
+}
+
+.btn-danger {
+  background: var(--color-peligro);
+  color: #ffffff;
+  &:hover:not(:disabled) {
+    background: var(--color-peligro-hover);
+  }
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-texto-secundario);
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:disabled {
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--color-fondo);
+    color: var(--color-texto);
+  }
+}
+
+.boton-accion-editar:hover {
+  color: var(--color-primario) !important;
+  background: var(--color-primario-suave) !important;
+}
+.boton-accion-eliminar:hover {
+  color: var(--color-peligro) !important;
+  background: var(--color-peligro-suave) !important;
+}
+
+/* ============================================================
+   Campos de formulario — reemplazan mat-form-field / matInput / mat-select
+   ============================================================ */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+
+  > label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-texto-secundario);
+
+    .material-icons {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.campo-control {
+  width: 100%;
+  border: 1px solid var(--color-borde);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-family: var(--font-sans);
+  color: var(--color-texto);
+  background: #ffffff;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: #94a3b8;
+  }
+
+  &:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px var(--color-primario-suave);
+  }
+
+  &:disabled {
+    background: var(--color-fondo);
+    color: var(--color-texto-secundario);
+  }
+}
+
+textarea.campo-control {
+  resize: vertical;
+  min-height: 72px;
+}
+
+select.campo-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2364748b'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 18px;
+  padding-right: 34px;
+}
+
+.campo.invalido .campo-control {
+  border-color: var(--color-peligro);
+  &:focus {
+    box-shadow: 0 0 0 3px var(--color-peligro-suave);
+  }
+}
+
+.campo-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.76rem;
+  color: var(--color-peligro);
+
+  .material-icons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.campo-con-icono {
+  position: relative;
+
+  .material-icons {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: var(--color-texto-secundario);
+  }
+
+  .campo-control {
+    padding-left: 40px;
+  }
+}
+
+/* ============================================================
+   Encabezado de sección (título + descripción + acción)
+   ============================================================ */
+.encabezado-pagina {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  .encabezado-textos {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  h1 {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .descripcion-pagina {
+    margin: 0;
+    color: var(--color-texto-secundario);
+    font-size: 0.9rem;
+  }
+
+  .btn-primary {
+    flex-shrink: 0;
+  }
+}
+
+/* ============================================================
+   Tarjeta contenedora (tablas, formularios de página completa)
+   ============================================================ */
+.tarjeta-contenido {
+  background: var(--color-tarjeta);
+  border: 1px solid var(--color-borde);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* ============================================================
+   Tablas de datos (HTML plano, sin mat-table)
+   ============================================================ */
+.tabla-envoltorio {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-tarjeta);
+
+  thead th {
+    background: var(--color-tabla-header-bg);
+    color: var(--color-tabla-header-texto);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-borde);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 12px 16px;
+    color: var(--color-texto);
+    border-bottom: 1px solid var(--color-borde);
+    font-size: 0.88rem;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+    &:hover {
+      background: var(--color-fila-hover);
+    }
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  td.celda-acciones {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    white-space: nowrap;
+  }
+}
+
+.paginador {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--color-borde);
+  background: var(--color-tarjeta);
+  font-size: 0.8rem;
+  color: var(--color-texto-secundario);
+
+  .paginador-controles {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .paginador-pagina {
+    padding: 0 8px;
+    white-space: nowrap;
+  }
+}
+
+/* ============================================================
+   Estados de carga / vacíos
+   ============================================================ */
+.cargando-contenedor {
+  display: flex;
+  justify-content: center;
+  padding: 64px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-primario-suave);
+  border-top-color: var(--color-primario);
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}
+
+.spinner-sm {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.estado-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 56px 24px;
+  text-align: center;
+
+  .icono-circular {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--color-primario-suave);
+    margin-bottom: 12px;
+
+    .material-icons {
+      font-size: 34px;
+      width: 34px;
+      height: 34px;
+      color: var(--color-primario);
+    }
+  }
+
+  .estado-vacio-titulo {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-texto);
+  }
+
+  .estado-vacio-texto {
+    margin: 0 0 8px;
+    color: var(--color-texto-secundario);
+    font-size: 0.9rem;
+    max-width: 360px;
+  }
+
+  .btn-primary {
+    margin-top: 8px;
+  }
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.campo-busqueda {
+  min-width: 280px;
+  flex: 1;
+  max-width: 360px;
+}
+
+.tarjeta-info {
+  margin-bottom: 16px;
+  border-radius: 16px;
+  padding: 18px 20px;
+
+  p {
+    margin: 4px 0;
+  }
+}
+
+/* ============================================================
+   Tira de resumen (paciente / medico / fecha)
+   ============================================================ */
+.tira-resumen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.dato-resumen {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 220px;
+  padding: 14px 18px;
+  border-radius: 999px;
+  background: var(--color-primario-suave);
+
+  .material-icons {
+    color: var(--color-primario);
+    flex-shrink: 0;
+  }
+
+  .etiqueta {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-texto-secundario);
+  }
+
+  strong {
+    display: block;
+    color: var(--color-texto);
+    font-size: 0.92rem;
+  }
+}
+
+/* ============================================================
+   Pestañas (reemplazan mat-tab-group) — ver Pestanas en compartido
+   ============================================================ */
+.pestanas-consulta {
+  display: block;
+  background: var(--color-tarjeta);
+  border: 1px solid var(--color-borde);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.pestanas-cabecera {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--color-borde);
+  padding: 0 12px;
+}
+
+.pestana-boton {
+  padding: 14px 16px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-texto-secundario);
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--color-texto);
+  }
+
+  &.activa {
+    color: var(--color-primario);
+    border-bottom-color: var(--color-primario);
+  }
+}
+
+.contenido-pestana {
+  padding: 24px;
+}
+
+.barra-accion-pestana {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.lista-clinica {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  dt {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-texto-secundario);
+    margin-top: 16px;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  dd {
+    margin: 2px 0 0;
+    color: var(--color-texto);
+    line-height: 1.5;
+  }
+}
+
+.seccion {
+  margin-top: 24px;
+
+  h2 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+}
+
+/* ============================================================
+   Formularios (dentro de diálogos)
+   ============================================================ */
+.campos {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fila-doble {
+  display: flex;
+  gap: 16px;
+
+  > * {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* ============================================================
+   Diálogos — reemplazan mat-dialog (ver DialogoHost)
+   ============================================================ */
+.dialogo-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+
+  &.activo {
+    display: flex;
+  }
+}
+
+.dialogo-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(1px);
+}
+
+.dialogo-panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 34rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--color-tarjeta);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.35);
+
+  > * {
+    display: block;
+  }
+}
+
+.dialogo-panel-lg {
+  max-width: 42rem;
+}
+
+.dialogo-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-sidebar);
+  padding: 16px 12px 16px 24px;
+  position: sticky;
+  top: 0;
+
+  h2 {
+    margin: 0;
+    padding: 0;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .btn-icon {
+    color: rgba(255, 255, 255, 0.75);
+    &:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.dialogo-cuerpo {
+  padding: 20px 24px 8px;
+}
+
+.dialogo-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px 20px;
+}
+
+/* ============================================================
+   Notificaciones (reemplazan mat-snack-bar)
+   ============================================================ */
+.toast-contenedor {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(92vw, 380px);
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: #ffffff;
+  box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.35);
+  font-size: 0.88rem;
+  animation: aparecer 0.18s ease-out;
+
+  .toast-mensaje {
+    flex: 1;
+  }
+
+  .toast-cerrar {
+    display: inline-flex;
+    color: rgba(255, 255, 255, 0.8);
+    background: none;
+    border: none;
+    cursor: pointer;
+    &:hover {
+      color: #ffffff;
+    }
+    .material-icons {
+      font-size: 18px;
+    }
+  }
+}
+
+.toast-exito {
+  background: #16a34a;
+}
+.toast-error {
+  background: #dc2626;
+}
+.toast-info {
+  background: #1e293b;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   Menú desplegable (reemplaza mat-menu) — usa <details>/<summary>
+   ============================================================ */
+.menu-desplegable {
+  position: relative;
+  display: inline-block;
+
+  > summary {
+    list-style: none;
+    cursor: pointer;
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  .menu-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 20;
+    min-width: 180px;
+    background: var(--color-tarjeta);
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.25);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    text-align: left;
+    text-transform: capitalize;
+    color: var(--color-texto);
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-fondo);
+    }
+  }
+}
+
+/* ============================================================
+   Impresión (ej. receta / consulta médica)
+   ============================================================ */
+.encabezado-impresion {
+  display: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .imprimible,
+  .imprimible * {
+    visibility: visible;
+  }
+
+  .imprimible {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px;
+    background: #ffffff !important;
+  }
+
+  .imprimible button {
+    display: none !important;
+  }
+
+  .imprimible .tarjeta-contenido,
+  .imprimible .tarjeta-info {
+    box-shadow: none !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  .imprimible .pestanas-cabecera {
+    display: none !important;
+  }
+
+  /* Al imprimir se muestran las 3 pestañas apiladas, aunque en pantalla
+     solo una estuviera activa ([hidden] las oculta con display:none). */
+  .imprimible .contenido-pestana[hidden] {
+    display: block !important;
+  }
+
+  .imprimible .contenido-pestana {
+    border-top: 1px solid #cbd5e1;
+    padding-top: 16px;
+  }
+
+  .encabezado-impresion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+
+    h1 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    span {
+      color: #475569;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+/* ============================================================
+   Chips / badges de estado (citas / exámenes solicitados / tipo paciente)
+   ============================================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.badge-neutro {
+  background: var(--color-tabla-header-bg);
+  color: var(--color-tabla-header-texto);
+}
+
+.estado-solicitada {
+  background: var(--color-info-suave);
+  color: var(--color-info);
+}
+
+.estado-confirmada {
+  background: var(--color-advertencia-suave);
+  color: var(--color-advertencia);
+}
+
+.estado-atendida,
+.estado-realizado,
+.estado-entregado {
+  background: var(--color-exito-suave);
+  color: var(--color-exito);
+}
+
+.estado-cancelada {
+  background: var(--color-peligro-suave);
+  color: var(--color-peligro);
+}
